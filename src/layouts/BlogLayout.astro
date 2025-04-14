@@ -1,0 +1,138 @@
+---
+import Layout from './Layout.astro';
+import ViewCounter from '../components/blog/ViewCounter.astro';
+import ThemeToggle from '../components/common/ThemeToggle.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  heroImage?: string;
+  slug: string;
+  tags?: string[];
+}
+
+const { 
+  title, 
+  description, 
+  pubDate, 
+  updatedDate, 
+  heroImage, 
+  slug,
+  tags = []
+} = Astro.props;
+
+// Format dates
+const formattedPubDate = pubDate.toLocaleDateString('es-ES', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-us', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<Layout title={title} description={description}>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <header class="mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <a href="/" class="text-primary hover:underline">← Back to blog</a>
+        <ThemeToggle />
+      </div>
+      
+      {heroImage && (
+        <img 
+          src={heroImage} 
+          alt={`Cover image for ${title}`} 
+          class="w-full rounded-lg shadow-md mb-6"
+        />
+      )}
+      
+      <h1 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+        {title}
+      </h1>
+      
+      <div class="flex flex-wrap items-center gap-3 text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
+        
+        {updatedDate && (
+          <span>(Updated: <time datetime={updatedDate.toISOString()}>{formattedUpdatedDate}</time>)</span>
+        )}
+        
+        <span class="mx-2">•</span>
+        <ViewCounter slug={slug} />
+      </div>
+      
+      {tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mb-6">
+          {tags.map(tag => (
+            <a 
+              href={`/tags/${tag}`} 
+              class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full text-sm hover:opacity-90"
+            >
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
+      
+      <p class="text-lg text-gray-700 dark:text-gray-300 mb-6">
+        {description}
+      </p>
+      
+      <hr class="border-gray-300 dark:border-gray-700">
+    </header>
+    
+    <article class="prose prose-lg max-w-none dark:prose-dark">
+      <slot />
+    </article>
+    
+    <div class="mt-12 pt-6 border-t border-gray-300 dark:border-gray-700">
+      <a href="/" class="text-primary hover:underline">← Back to all posts</a>
+    </div>
+  </div>
+</Layout>
+
+<style is:global>
+  /* Add dark mode styling for prose content */
+  .dark .prose {
+    color: #e5e7eb;
+  }
+  
+  .dark .prose h1,
+  .dark .prose h2, 
+  .dark .prose h3, 
+  .dark .prose h4,
+  .dark .prose h5,
+  .dark .prose h6,
+  .dark .prose strong {
+    color: #f9fafb;
+  }
+  
+  .dark .prose a {
+    color: var(--color-primary);
+  }
+  
+  .dark .prose code {
+    background-color: rgba(55, 65, 81, 0.5);
+    color: #e5e7eb;
+  }
+  
+  .dark .prose pre {
+    background-color: #1f2937;
+  }
+  
+  .dark .prose blockquote {
+    color: #e5e7eb;
+    border-left-color: #4b5563;
+  }
+  
+  .dark .prose hr {
+    border-color: #4b5563;
+  }
+</style>

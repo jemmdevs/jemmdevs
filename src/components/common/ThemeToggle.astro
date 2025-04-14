@@ -1,0 +1,62 @@
+<button
+  id="theme-toggle"
+  aria-label="Toggle theme"
+  class="fixed top-4 right-4 z-50 h-10 w-10 flex items-center justify-center rounded-full bg-white text-black dark:bg-black dark:text-white p-2 border border-black dark:border-white shadow-md hover:scale-110 transition-all duration-300"
+>
+  <!-- Luna minimalista -->
+  <svg class="dark:hidden w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M18 12A6 6 0 016 12c0-3.09 1.91-4.93 3-6.5A6 6 0 0018 12z" />
+  </svg>
+  
+  <!-- Sol minimalista -->
+  <svg class="hidden dark:block w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="4" />
+    <line x1="12" y1="3" x2="12" y2="6" />
+    <line x1="12" y1="18" x2="12" y2="21" />
+    <line x1="3" y1="12" x2="6" y2="12" />
+    <line x1="18" y1="12" x2="21" y2="12" />
+    <line x1="6" y1="6" x2="8" y2="8" />
+    <line x1="16" y1="16" x2="18" y2="18" />
+    <line x1="6" y1="18" x2="8" y2="16" />
+    <line x1="16" y1="8" x2="18" y2="6" />
+  </svg>
+</button>
+
+<script is:inline>
+  // Ejecutar inmediatamente
+  (function() {
+    // Función para alternar el tema
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const newTheme = isDark ? 'light' : 'dark';
+      
+      // Aplicar el tema
+      document.documentElement.classList.toggle('dark', newTheme === 'dark');
+      
+      // Guardar preferencia
+      localStorage.setItem('blog-theme-preference', newTheme);
+      console.log('Tema cambiado a:', newTheme);
+    }
+    
+    // Agregar evento al botón de tema cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+      const themeToggle = document.getElementById('theme-toggle');
+      if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+        console.log('Botón de tema configurado');
+      }
+    });
+    
+    // También hacerlo cuando cambie la página en Astro
+    document.addEventListener('astro:page-load', function() {
+      const themeToggle = document.getElementById('theme-toggle');
+      if (themeToggle) {
+        // Limpiar listeners previos
+        themeToggle.removeEventListener('click', toggleTheme);
+        // Añadir nuevo listener
+        themeToggle.addEventListener('click', toggleTheme);
+        console.log('Botón de tema reconfigurado después de navegación');
+      }
+    });
+  })();
+</script> 

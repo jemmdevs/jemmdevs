@@ -1,0 +1,151 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/common/Navbar.astro';
+import ViewCounter from '../components/blog/ViewCounter.astro';
+import { getCollection } from 'astro:content';
+
+// Obtener todos los posts del blog
+const allPosts = await getCollection('blog', ({ data }) => {
+  return !data.draft;
+});
+
+// Ordenar posts por fecha (más recientes primero)
+const sortedPosts = allPosts.sort((a, b) => {
+  // Convertir explícitamente a objetos Date para comparación
+  const dateA = new Date(a.data.pubDate);
+  const dateB = new Date(b.data.pubDate);
+  // Ordenar de más reciente a más antiguo
+  return dateB.getTime() - dateA.getTime();
+});
+
+// Preparar datos para el script de búsqueda del cliente
+const searchablePosts = sortedPosts.map(post => ({
+  title: post.data.title,
+  description: post.data.description,
+  tags: post.data.tags || [],
+  slug: post.slug
+}));
+---
+
+<Layout title="Jemmdev's Blog | Latest Articles">
+  <Navbar title="Jemmdev's Blog" />
+  
+  <main class="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+      <h1 class="text-4xl font-bold mb-8 text-gray-900 dark:text-white">Articles</h1>
+      
+      <!-- Barra de búsqueda -->
+      <div class="mb-12">
+        <input 
+          type="text" 
+          id="search-input"
+          placeholder="Search articles..." 
+          class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+        />
+      </div>
+      
+      <!-- Mensaje cuando no hay resultados -->
+      <div id="no-results" class="hidden py-8 text-center text-gray-500 dark:text-gray-400">
+        No articles match your search criteria.
+      </div>
+      
+      <!-- Lista de posts -->
+      <div id="posts-container">
+        {sortedPosts.map((post, index) => (
+          <article class={`post-item py-6 ${index < sortedPosts.length - 1 ? 'border-b border-gray-200 dark:border-gray-800' : ''}`} data-slug={post.slug}>
+            <a href={`/blog/${post.slug}`} class="block group">
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors duration-200 mb-2">
+                {post.data.title}
+              </h2>
+              
+              <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {new Date(post.data.pubDate).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </time>
+                <span class="mx-2">·</span>
+                <ViewCounter slug={post.slug} />
+                
+                {post.data.tags && post.data.tags.length > 0 && (
+                  <>
+                    <span class="mx-2">·</span>
+                    <div class="flex flex-wrap gap-2">
+                      {post.data.tags.map((tag) => (
+                        <span class="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-700 dark:text-gray-300">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              
+              <p class="text-gray-600 dark:text-gray-300">
+                {post.data.description}
+              </p>
+            </a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script define:vars={{ searchablePosts }}>
+  // Configurar la búsqueda en tiempo real
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('search-input');
+    const noResultsDiv = document.getElementById('no-results');
+    const postItems = document.querySelectorAll('.post-item');
+    
+    if (searchInput && noResultsDiv) {
+      searchInput.addEventListener('input', (e) => {
+        const inputElement = e.target;
+        // Asegurarnos de que el target sea un elemento de entrada
+        if (!(inputElement instanceof HTMLInputElement)) return;
+        
+        const searchTerm = inputElement.value.toLowerCase().trim();
+        let matchCount = 0;
+        
+        // Si no hay término de búsqueda, mostrar todos los posts
+        if (!searchTerm) {
+          postItems.forEach(item => item.classList.remove('hidden'));
+          noResultsDiv.classList.add('hidden');
+          return;
+        }
+        
+        // Filtrar posts basado en el término de búsqueda
+        postItems.forEach((item) => {
+          const slug = item.getAttribute('data-slug');
+          const post = searchablePosts.find(p => p.slug === slug);
+          
+          if (post) {
+            // Buscar en título, descripción y tags
+            const titleMatch = post.title.toLowerCase().includes(searchTerm);
+            const descMatch = post.description.toLowerCase().includes(searchTerm);
+            const tagMatch = post.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+            
+            if (titleMatch || descMatch || tagMatch) {
+              item.classList.remove('hidden');
+              matchCount++;
+            } else {
+              item.classList.add('hidden');
+            }
+          }
+        });
+        
+        // Mostrar mensaje de "no hay resultados" si es necesario
+        if (matchCount === 0) {
+          noResultsDiv.classList.remove('hidden');
+        } else {
+          noResultsDiv.classList.add('hidden');
+        }
+      });
+    }
+  });
+</script> 

@@ -1,0 +1,83 @@
+---
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+---
+
+<!-- Componente invisible que solo incrementa el contador de vistas -->
+<div data-view-incrementer data-slug={slug} class="hidden"></div>
+
+<script>
+  // Constante para la clave de localStorage
+  const VIEW_STORAGE_KEY = 'blog-post-views';
+  
+  // Función para incrementar conteo de vistas
+  function incrementViewCount(slug: string) {
+    if (typeof localStorage === 'undefined') return 0;
+    
+    try {
+      // Obtener datos actuales
+      const viewData = localStorage.getItem(VIEW_STORAGE_KEY);
+      const counts = viewData ? JSON.parse(viewData) : {};
+      
+      // Incrementar contador
+      const newCount = (counts[slug] || 0) + 1;
+      counts[slug] = newCount;
+      
+      // Guardar en localStorage
+      localStorage.setItem(VIEW_STORAGE_KEY, JSON.stringify(counts));
+      return newCount;
+    } catch (error) {
+      console.error('Error al incrementar conteo de vistas:', error);
+      return 0;
+    }
+  }
+  
+  // Incrementar vista en la carga de la página
+  document.addEventListener('DOMContentLoaded', () => {
+    const incrementers = document.querySelectorAll('[data-view-incrementer]');
+    
+    incrementers.forEach(incrementer => {
+      const slug = incrementer.getAttribute('data-slug');
+      if (slug) {
+        // Solo incrementar una vez por visita a la página
+        incrementViewCount(slug);
+        
+        // Actualizar todos los contadores con este slug
+        document.querySelectorAll(`[data-view-counter][data-slug="${slug}"] .view-count`).forEach(counter => {
+          // Obtener datos actuales
+          const viewData = localStorage.getItem(VIEW_STORAGE_KEY);
+          const counts = viewData ? JSON.parse(viewData) : {};
+          
+          // Actualizar contador
+          counter.textContent = (counts[slug] || 0).toString();
+        });
+      }
+    });
+  });
+  
+  // Para páginas que utilizan transiciones de Astro View
+  document.addEventListener('astro:page-load', () => {
+    const incrementers = document.querySelectorAll('[data-view-incrementer]');
+    
+    incrementers.forEach(incrementer => {
+      const slug = incrementer.getAttribute('data-slug');
+      if (slug) {
+        // Solo incrementar una vez por visita a la página
+        incrementViewCount(slug);
+        
+        // Actualizar todos los contadores con este slug
+        document.querySelectorAll(`[data-view-counter][data-slug="${slug}"] .view-count`).forEach(counter => {
+          // Obtener datos actuales
+          const viewData = localStorage.getItem(VIEW_STORAGE_KEY);
+          const counts = viewData ? JSON.parse(viewData) : {};
+          
+          // Actualizar contador
+          counter.textContent = (counts[slug] || 0).toString();
+        });
+      }
+    });
+  });
+</script> 

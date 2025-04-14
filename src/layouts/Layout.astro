@@ -1,0 +1,69 @@
+---
+import ThemeToggle from '../components/common/ThemeToggle.astro';
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { 
+	title, 
+	description = "Un blog simple con tema claro/oscuro"
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<title>{title}</title>
+		
+		<!-- Prevenir flash de tema incorrecto -->
+		<script is:inline>
+			// Función para configurar el tema inicial
+			function setInitialTheme() {
+				const storedTheme = localStorage.getItem('blog-theme-preference');
+				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+				
+				// Establecer tema basado en preferencia o valor predeterminado
+				if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
+					document.documentElement.classList.add('dark');
+				} else {
+					document.documentElement.classList.remove('dark');
+				}
+				
+				// Agregar atributo para indicar que el tema está cargado
+				document.documentElement.setAttribute('data-theme-loaded', 'true');
+				console.log('Tema inicial establecido como:', document.documentElement.classList.contains('dark') ? 'oscuro' : 'claro');
+			}
+			
+			// Ejecutar inmediatamente
+			setInitialTheme();
+		</script>
+	</head>
+	<body>
+		<div class="min-h-screen flex flex-col bg-white text-black dark:bg-black dark:text-white">
+			<main class="flex-grow">
+				<slot />
+			</main>
+		</div>
+	</body>
+</html>
+
+<style is:global>
+	@import "../styles/global.css";
+	
+	/* Animación de aparecer gradualmente cuando el tema está cargado */
+	html:not([data-theme-loaded]) body {
+		opacity: 0;
+	}
+	
+	html[data-theme-loaded] body {
+		opacity: 1;
+		transition: opacity 0.3s ease;
+	}
+</style>

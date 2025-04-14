@@ -1,0 +1,49 @@
+<button
+  id="new-theme-toggle"
+  class="fixed bottom-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-white text-black dark:bg-black dark:text-white p-2 border-2 border-black dark:border-white shadow-lg hover:scale-110 transition-all duration-300"
+>
+  <span class="dark:hidden">🌙</span>
+  <span class="hidden dark:inline">☀️</span>
+</button>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function() {
+    setupThemeToggle();
+  });
+  
+  // También ejecutar cuando Astro hace navegación entre páginas
+  document.addEventListener('astro:page-load', function() {
+    setupThemeToggle();
+  });
+  
+  function setupThemeToggle() {
+    const toggleButton = document.getElementById('new-theme-toggle');
+    
+    if (toggleButton) {
+      console.log('Nuevo botón de toggle encontrado');
+      
+      // Eliminar listeners previos para evitar duplicados
+      toggleButton.removeEventListener('click', toggleThemeHandler);
+      
+      // Agregar el nuevo listener
+      toggleButton.addEventListener('click', toggleThemeHandler);
+      console.log('Listener agregado al nuevo botón de toggle');
+    } else {
+      console.error('No se encontró el botón #new-theme-toggle');
+    }
+  }
+  
+  function toggleThemeHandler() {
+    console.log('Nuevo botón de toggle clickeado');
+    const isDark = document.documentElement.classList.contains('dark');
+    const newTheme = isDark ? 'light' : 'dark';
+    
+    console.log(`Cambiando tema de ${isDark ? 'oscuro' : 'claro'} a ${newTheme}`);
+    
+    // Guardar en localStorage
+    localStorage.setItem('blog-theme-preference', newTheme);
+    
+    // Aplicar el tema
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+  }
+</script> 

@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #3b82f6;
+  --color-secondary: #6366f1;
+  --color-accent: #10b981;
+}
+
+/* Estilos básicos del tema claro/oscuro */
+body {
+  @apply bg-white text-black transition-colors duration-300;
+}
+
+html.dark body {
+  @apply bg-black text-white;
+}
+
+/* Enlaces */
+a {
+  @apply text-primary hover:text-secondary transition-colors duration-300;
+}
+
+/* Encabezados */
+h1, h2, h3, h4, h5, h6 {
+  @apply text-black dark:text-white;
+}
+
+/* Tarjetas */
+.card {
+  @apply bg-white dark:bg-black shadow-md rounded-lg overflow-hidden border border-gray-200 dark:border-white transition-all duration-300;
+}
+
+/* Formularios */
+input, textarea, select {
+  @apply bg-white dark:bg-black text-black dark:text-white border border-gray-300 dark:border-gray-700;
+}
+
+/* Botones */
+button {
+  @apply transition-colors duration-300;
+}
+
+/* Paginación */
+.pagination-item {
+  @apply inline-flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-black text-black dark:text-white border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900;
+}
+
+.pagination-item.active {
+  @apply bg-primary text-white border-primary;
+}
+
+/* Contenido del blog */
+.prose {
+  @apply text-black;
+}
+
+.dark .prose {
+  @apply text-white;
+}
+
+.dark .prose p,
+.dark .prose li,
+.dark .prose strong,
+.dark .prose em,
+.dark .prose blockquote,
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4,
+.dark .prose h5,
+.dark .prose h6 {
+  @apply text-white;
+}
+
+.dark .prose code {
+  @apply bg-gray-800 text-white;
+}
+
+.dark .prose pre {
+  @apply bg-gray-900;
+}
+
+/* Transición para todos los elementos que cambian con el tema */
+* {
+  @apply transition-colors duration-300 ease-in-out;
+}
+
+html {
+  @apply scroll-smooth;
+}
+
+/* Personalización de textos y enlaces */
+a {
+  @apply text-primary hover:text-secondary transition-colors duration-300;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply text-black dark:text-white;
+}
+
+/* Estilos para tarjetas y componentes comunes */
+.card {
+  @apply bg-white dark:bg-black shadow-md rounded-lg overflow-hidden border border-gray-200 dark:border-white transition-all duration-300;
+}
+
+/* Estilo personalizado para el botón de tema */
+.theme-toggle-wrapper {
+  @apply fixed bottom-6 right-6 z-50 md:static md:z-auto;
+} 

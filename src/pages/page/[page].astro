@@ -1,0 +1,197 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ViewCounter from '../../components/blog/ViewCounter.astro';
+import { getCollection } from 'astro:content';
+import ThemeToggle from '../../components/common/ThemeToggle.astro';
+
+// Función para generar rutas de paginación
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog', ({ data }) => {
+    return !data.draft;
+  });
+
+  // Ordenar posts por fecha
+  const sortedPosts = allPosts.sort((a, b) => {
+    // Convertir explícitamente a objetos Date para comparación
+    const dateA = new Date(a.data.pubDate);
+    const dateB = new Date(b.data.pubDate);
+    // Ordenar de más reciente a más antiguo
+    return dateB.getTime() - dateA.getTime();
+  });
+  
+  // Paginación
+  const postsPerPage = 5;
+  const totalPages = Math.ceil(sortedPosts.length / postsPerPage);
+  
+  // Generar páginas
+  return Array.from({ length: totalPages }).map((_, i) => {
+    const pageNum = i + 1;
+    const start = i * postsPerPage;
+    const end = start + postsPerPage;
+    
+    return {
+      params: { page: pageNum.toString() },
+      props: { 
+        posts: sortedPosts.slice(start, end),
+        currentPage: pageNum,
+        totalPages,
+        totalPosts: sortedPosts.length,
+        searchablePosts: sortedPosts.map(post => ({
+          title: post.data.title,
+          description: post.data.description,
+          tags: post.data.tags || [],
+          slug: post.slug
+        }))
+      }
+    };
+  });
+}
+
+// Props de la página
+const { posts, currentPage, totalPages, totalPosts, searchablePosts } = Astro.props;
+---
+
+<Layout title={`Jemmdev's Blog - Page ${currentPage}`}>
+  <!-- Botón de toggle de tema -->
+  <ThemeToggle />
+  
+  <main class="container mx-auto px-4 py-12 sm:px-6 max-w-3xl">
+    <header class="mb-12 text-center">
+      <h1 class="text-4xl font-bold mb-4 text-black dark:text-white">Jemmdev's Blog</h1>
+      <p class="text-lg text-gray-600 dark:text-gray-300">
+        A modern development journey: tutorials, insights and programming adventures
+      </p>
+      <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+        Página {currentPage} de {totalPages} • {totalPosts} artículos en total
+      </div>
+    </header>
+
+    <!-- Barra de búsqueda -->
+    <div class="mb-10">
+      <input 
+        type="text" 
+        id="search-input"
+        placeholder="Search articles..." 
+        class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+      />
+    </div>
+    
+    <!-- Mensaje cuando no hay resultados -->
+    <div id="no-results" class="hidden py-8 text-center text-gray-500 dark:text-gray-400">
+      No articles match your search criteria.
+    </div>
+    
+    <!-- Lista de posts -->
+    <div id="posts-container">
+      {posts.map((post, index) => (
+        <article class={`post-item py-6 ${index < posts.length - 1 ? 'border-b border-gray-200 dark:border-gray-700' : ''}`} data-slug={post.slug}>
+          <a href={`/blog/${post.slug}`} class="block group">
+            <h2 class="text-2xl font-bold text-black dark:text-white group-hover:text-primary transition-colors duration-200 mb-2">
+              {post.data.title}
+            </h2>
+            
+            <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
+              <time datetime={post.data.pubDate.toISOString()}>
+                {new Date(post.data.pubDate).toLocaleDateString('es-ES', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </time>
+              <span class="mx-2">·</span>
+              <ViewCounter slug={post.slug} />
+              
+              {post.data.tags && post.data.tags.length > 0 && (
+                <>
+                  <span class="mx-2">·</span>
+                  <div class="flex flex-wrap gap-2">
+                    {post.data.tags.map((tag) => (
+                      <span class="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-700 dark:text-gray-300">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+            
+            <p class="text-gray-600 dark:text-gray-300">
+              {post.data.description}
+            </p>
+          </a>
+        </article>
+      ))}
+    </div>
+    
+    <!-- Paginación -->
+    {totalPages > 1 && (
+      <div class="mt-12 flex justify-center space-x-2">
+        {Array.from({ length: totalPages }).map((_, i) => (
+          <a
+            href={i === 0 ? '/' : `/page/${i + 1}`}
+            class={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}
+            aria-label={`Página ${i + 1}`}
+          >
+            {i + 1}
+          </a>
+        ))}
+      </div>
+    )}
+  </main>
+</Layout>
+
+<script define:vars={{ searchablePosts }}>
+  // Configurar la búsqueda en tiempo real
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('search-input');
+    const noResultsDiv = document.getElementById('no-results');
+    const postItems = document.querySelectorAll('.post-item');
+    
+    if (searchInput && noResultsDiv) {
+      searchInput.addEventListener('input', (e) => {
+        const inputElement = e.target;
+        // Asegurarnos de que el target sea un elemento de entrada
+        if (!(inputElement instanceof HTMLInputElement)) return;
+        
+        const searchTerm = inputElement.value.toLowerCase().trim();
+        let matchCount = 0;
+        
+        // Si no hay término de búsqueda, mostrar todos los posts
+        if (!searchTerm) {
+          postItems.forEach(item => item.classList.remove('hidden'));
+          noResultsDiv.classList.add('hidden');
+          return;
+        }
+        
+        // Filtrar posts basado en el término de búsqueda
+        postItems.forEach((item) => {
+          const slug = item.getAttribute('data-slug');
+          const post = searchablePosts.find(p => p.slug === slug);
+          
+          if (post) {
+            // Buscar en título, descripción y tags
+            const titleMatch = post.title.toLowerCase().includes(searchTerm);
+            const descMatch = post.description.toLowerCase().includes(searchTerm);
+            const tagMatch = post.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+            
+            if (titleMatch || descMatch || tagMatch) {
+              item.classList.remove('hidden');
+              matchCount++;
+            } else {
+              item.classList.add('hidden');
+            }
+          }
+        });
+        
+        // Mostrar mensaje de "no hay resultados" si es necesario
+        if (matchCount === 0) {
+          noResultsDiv.classList.remove('hidden');
+        } else {
+          noResultsDiv.classList.add('hidden');
+        }
+      });
+    }
+  });
+</script> 
