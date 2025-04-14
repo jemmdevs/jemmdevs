@@ -58,8 +58,8 @@ const updatedDate = entry.data.updatedDate
   <!-- Botón de toggle de tema -->
   <ThemeToggle />
   
-  <!-- Componente que incrementa el contador de vistas automáticamente -->
-  <ViewIncrementer slug={entry.slug} />
+  <!-- ViewIncrementer oculto (desactivado) -->
+  <!-- <ViewIncrementer slug={entry.slug} /> -->
   
   <main class="container mx-auto px-4 py-12 sm:px-6 max-w-3xl">
     <article>
@@ -87,9 +87,6 @@ const updatedDate = entry.data.updatedDate
             Actualizado: {updatedDate}
           </span>
         )}
-        
-        <span class="mx-2">•</span>
-        <ViewCounter slug={entry.slug} />
         
         <span class="mx-2">•</span>
         <span class="flex items-center gap-1">

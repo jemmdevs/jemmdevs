@@ -68,8 +68,6 @@ const searchablePosts = sortedPosts.map(post => ({
                     minute: '2-digit'
                   })}
                 </time>
-                <span class="mx-2">·</span>
-                <ViewCounter slug={post.slug} />
                 
                 {post.data.tags && post.data.tags.length > 0 && (
                   <>

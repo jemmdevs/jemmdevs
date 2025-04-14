@@ -12,17 +12,15 @@ const {
 } = Astro.props;
 ---
 
-<span class={className} data-view-counter data-slug={slug}>
-  {showIcon && (
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-    </svg>
-  )}
-  <span class="view-count">0</span> vistas
+<!-- El componente ahora no muestra nada -->
+<span class="hidden" data-view-counter data-slug={slug}>
+  <span class="view-count">0</span>
 </span>
 
 <script>
+  // Mantenemos el script para que siga registrando las vistas en localStorage
+  // pero ya no actualizamos la interfaz visible
+  
   // Constante para la clave de localStorage
   const VIEW_STORAGE_KEY = 'blog-post-views';
   
@@ -61,7 +59,7 @@ const {
     }
   }
   
-  // Actualizar todos los contadores de vistas
+  // Actualizar los contadores (ahora invisible para el usuario)
   function updateViewCounters() {
     const counters = document.querySelectorAll('[data-view-counter]');
     
