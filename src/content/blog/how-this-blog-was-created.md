@@ -2,6 +2,7 @@
 title: "How This Blog Was Created: An Astro Journey"
 description: "A step-by-step tutorial on how I built this minimalist blog using Astro, Tailwind CSS, and other modern web technologies"
 author: "Jemmdev"
+pubDate: 2024-04-14
 tags: ["tutorial", "astro", "tailwind", "web development"]
 ---
 

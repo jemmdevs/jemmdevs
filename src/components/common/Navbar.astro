@@ -12,7 +12,9 @@ const { title = 'Jemmdev\'s Blog' } = Astro.props;
   <div class="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
     <!-- Logo/Brand -->
     <a href="/" class="flex items-center space-x-2">
-      <span class="text-xl font-bold text-black dark:text-white">{title}</span>
+      <span class="text-xl font-bold text-black dark:text-white">
+        <a href="https://portfolio-jemmdevs.vercel.app/" class="text-black dark:text-white hover:text-primary transition-colors duration-200">{title}</a>
+      </span>
     </a>
     
     <!-- Navigation -->

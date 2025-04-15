@@ -2,6 +2,7 @@
 title: "About Me: Jemmdev"
 description: "Get to know me better: who I am, what I do, and my passion for programming"
 author: "Jemmdev"
+pubDate: 2024-04-13
 tags: ["personal", "programming", "introduction"]
 ---
 

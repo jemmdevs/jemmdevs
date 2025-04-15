@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --color-primary: #3b82f6;
-  --color-secondary: #6366f1;
+  --color-primary: #1DA1F2;
+  --color-secondary: #0c7abf;
   --color-accent: #10b981;
 }
 
@@ -35,6 +35,11 @@ h1, h2, h3, h4, h5, h6 {
 /* Formularios */
 input, textarea, select {
   @apply bg-white dark:bg-black text-black dark:text-white border border-gray-300 dark:border-gray-700;
+}
+
+/* Estilos adicionales para el foco */
+input:focus, textarea:focus, select:focus {
+  @apply outline-none ring-2 ring-primary border-primary;
 }
 
 /* Botones */

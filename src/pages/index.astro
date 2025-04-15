@@ -42,7 +42,9 @@ const searchablePosts = sortedPosts.map(post => ({
 	
 	<main class="container mx-auto px-4 py-12 sm:px-6 max-w-3xl">
 		<header class="mb-12 text-center">
-			<h1 class="text-4xl font-bold mb-4 text-black dark:text-white">Jemmdev's</h1>
+			<h1 class="text-4xl font-bold mb-4 text-black dark:text-white">
+				<a href="https://portfolio-jemmdevs.vercel.app/" class="text-black dark:text-white hover:text-primary transition-colors duration-200">Jemmdev's</a>
+			</h1>
 			<p class="text-lg text-gray-600 dark:text-gray-300">
 				Welcome to a new era of devs
 			</p>
@@ -54,7 +56,7 @@ const searchablePosts = sortedPosts.map(post => ({
 				type="text" 
 				id="search-input"
 				placeholder="Search articles..." 
-				class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+				class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-black text-black dark:text-white focus:outline-none shadow-sm"
 			/>
 		</div>
 		
@@ -77,9 +79,7 @@ const searchablePosts = sortedPosts.map(post => ({
 								{new Date(post.data.pubDate).toLocaleDateString('es-ES', {
 									year: 'numeric',
 									month: 'long',
-									day: 'numeric',
-									hour: '2-digit',
-									minute: '2-digit'
+									day: 'numeric'
 								})}
 							</time>
 							
